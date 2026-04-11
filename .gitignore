@@ -17,3 +17,8 @@ dist/
 .DS_Store
 Thumbs.db
 .superpowers/
+
+server/uploads/
+server/.env
+server/feedback.db
+.superpowers/
