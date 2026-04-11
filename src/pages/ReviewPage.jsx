@@ -29,17 +29,22 @@ export default function ReviewPage() {
 
   async function saveAnnotation(comment) {
     if (!pendingBox) return
-    const res = await fetch(`/api/submissions/${id}/annotations`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...pendingBox, comment }),
-    })
-    if (res.ok) {
-      const ann = await res.json()
-      setHumanAnnotations(prev => [...prev, ann])
+    try {
+      const res = await fetch(`/api/submissions/${id}/annotations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...pendingBox, comment }),
+      })
+      if (res.ok) {
+        const ann = await res.json()
+        setHumanAnnotations(prev => [...prev, ann])
+      }
+    } catch {
+      // Network error — silently fail, state will reset below
+    } finally {
+      setPendingBox(null)
+      setMode('view')
     }
-    setPendingBox(null)
-    setMode('view')
   }
 
   function handleDraw(box) {
@@ -50,7 +55,9 @@ export default function ReviewPage() {
   if (loading) return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-slate-400 text-sm">Loading…</div>
   if (error)   return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-slate-400 text-sm">{error}</div>
 
-  const screenshotUrl = `/uploads/${submission.screenshotPath.replace('uploads/', '')}`
+  const screenshotUrl = submission.screenshotPath
+    ? `/uploads/${submission.screenshotPath.replace('uploads/', '')}`
+    : null
 
   return (
     <div className="flex flex-col h-screen bg-slate-900 overflow-hidden">
@@ -65,7 +72,7 @@ export default function ReviewPage() {
         </div>
         <div className="flex items-center gap-2">
           <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-950 text-indigo-400">
-            🤖 {submission.aiAnnotations.length} AI
+            🤖 {(submission.aiAnnotations ?? []).length} AI
           </span>
           <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-400">
             💬 {humanAnnotations.length} human
@@ -102,8 +109,8 @@ export default function ReviewPage() {
           {/* Screenshot + overlays */}
           <div ref={canvasWrapRef} className="relative">
             <AnnotationCanvas
-              screenshotUrl={screenshotUrl}
-              aiAnnotations={submission.aiAnnotations}
+              screenshotUrl={screenshotUrl ?? ''}
+              aiAnnotations={submission.aiAnnotations ?? []}
               humanAnnotations={humanAnnotations}
               activeTab={mode === 'annotate' ? 'none' : activeTab}
             />
@@ -112,7 +119,7 @@ export default function ReviewPage() {
               <DrawOverlay onDraw={handleDraw} />
             )}
 
-            {(mode === 'popover' || pendingBox) && pendingBox && (
+            {mode === 'popover' && pendingBox && (
               <>
                 {/* Show the drawn box */}
                 <div
@@ -144,7 +151,7 @@ export default function ReviewPage() {
 
         {/* Sidebar */}
         <AnnotationSidebar
-          aiAnnotations={submission.aiAnnotations}
+          aiAnnotations={submission.aiAnnotations ?? []}
           humanAnnotations={humanAnnotations}
           activeTab={activeTab}
           onTabChange={setActiveTab}
