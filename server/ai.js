@@ -1,9 +1,9 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { GoogleGenAI } from '@google/genai'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
 /**
- * Calls Claude with a screenshot (as base64) + context and returns
+ * Calls Gemini with a screenshot (as base64) + context and returns
  * an array of annotation objects: { x, y, width, height, comment }
  * where x/y/width/height are percentages (0-100) of image dimensions.
  * Returns [] on any failure.
@@ -37,19 +37,20 @@ Rules:
 - Coordinates must be accurate to the actual element positions in the image`
 
   try {
-    const response = await client.messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 1024,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Image } },
-          { type: 'text', text: prompt },
-        ],
-      }],
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: [
+        { inlineData: { mimeType: mediaType, data: base64Image } },
+        { text: prompt },
+      ],
     })
 
-    const text = response.content[0].text.trim()
+    let text = response.text.trim()
+
+    // Strip markdown fences if the model wraps the JSON
+    const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+    if (fenceMatch) text = fenceMatch[1].trim()
+
     const annotations = JSON.parse(text)
 
     // Validate shape
@@ -59,7 +60,8 @@ Rules:
       typeof a.width === 'number' && typeof a.height === 'number' &&
       typeof a.comment === 'string'
     )
-  } catch {
+  } catch (err) {
+    console.error('[AI] analyzeScreenshot failed:', err?.message ?? err)
     return []
   }
 }

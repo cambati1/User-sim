@@ -1,6 +1,5 @@
-import { test, before, after } from 'node:test'
+import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import fs from 'node:fs'
 
 // Use an in-memory DB for tests by temporarily overriding DB_PATH
 process.env.DB_PATH = ':memory:'

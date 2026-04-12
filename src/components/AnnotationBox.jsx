@@ -8,7 +8,7 @@
  *   containerHeight: number  (px height of screenshot)
  *   index: number            (1-based label)
  */
-export default function AnnotationBox({ ann, containerWidth, containerHeight, index }) {
+export default function AnnotationBox({ ann, index }) {
   const isAI = ann.type === 'ai'
 
   const style = {
