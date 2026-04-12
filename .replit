@@ -45,4 +45,3 @@ build = ["npm", "run", "build"]
 [userenv]
 
 [userenv.shared]
-GEMINI_API_KEY = "AIzaSyC-u52lnVsyV1gYXFd3UxftgHs9rtj6cvs"
