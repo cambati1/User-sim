@@ -35,7 +35,7 @@ export default function AnnotationCanvas({ screenshotUrl, aiAnnotations, humanAn
   ]
 
   return (
-    <div className="relative rounded-xl shadow-2xl overflow-visible" style={{ lineHeight: 0 }}>
+    <div className="relative inline-block rounded-xl shadow-2xl overflow-visible" style={{ lineHeight: 0 }}>
       <img
         ref={imgRef}
         src={screenshotUrl}
