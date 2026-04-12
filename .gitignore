@@ -22,3 +22,4 @@ server/uploads/
 server/.env
 server/feedback.db
 .superpowers/
+/attached_assets
