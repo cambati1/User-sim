@@ -29,19 +29,19 @@ export default function AnnotationCanvas({ screenshotUrl, aiAnnotations, humanAn
   const aiAnns    = aiAnnotations.map(a => ({ ...a, type: 'ai' }))
   const humanAnns = humanAnnotations.map(a => ({ ...a, type: 'human' }))
 
-  // activeTab 'none' hides all annotations (used during annotate mode)
   const visible = activeTab === 'none' ? [] : [
     ...(activeTab !== 'human' ? aiAnns : []),
     ...(activeTab !== 'ai' ? humanAnns : []),
   ]
 
   return (
-    <div className="relative inline-block rounded-xl shadow-2xl overflow-visible" style={{ lineHeight: 0 }}>
+    <div className="relative rounded-xl shadow-2xl overflow-visible" style={{ lineHeight: 0 }}>
       <img
         ref={imgRef}
         src={screenshotUrl}
         alt="App screenshot"
-        className="block w-[340px] rounded-xl"
+        className="block rounded-xl"
+        style={{ maxWidth: '100%', maxHeight: 'calc(100vh - 10rem)' }}
         onLoad={() => {
           if (imgRef.current) {
             setImgSize({ width: imgRef.current.offsetWidth, height: imgRef.current.offsetHeight })

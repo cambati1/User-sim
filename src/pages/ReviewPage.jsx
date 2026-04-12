@@ -89,63 +89,67 @@ export default function ReviewPage() {
       {/* Body */}
       <div className="flex flex-1 overflow-hidden">
         {/* Canvas area */}
-        <div className="flex-1 flex flex-col items-center overflow-auto bg-slate-900 pt-12 pb-8 px-8 gap-5">
+        <div className="flex-1 flex flex-col overflow-hidden bg-slate-900">
           {/* Mode switcher */}
-          <div className="flex-shrink-0 bg-slate-800 border border-slate-700 rounded-xl p-1 flex gap-1">
-            <button
-              onClick={() => { setMode('view'); setPendingBox(null) }}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${mode === 'view' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-white'}`}
-            >
-              👁 View
-            </button>
-            <button
-              onClick={() => setMode('annotate')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${mode === 'annotate' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-white'}`}
-            >
-              ✏️ Annotate
-            </button>
+          <div className="flex-shrink-0 flex justify-center pt-4 pb-3">
+            <div className="bg-slate-800 border border-slate-700 rounded-xl p-1 flex gap-1">
+              <button
+                onClick={() => { setMode('view'); setPendingBox(null) }}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${mode === 'view' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-white'}`}
+              >
+                👁 View
+              </button>
+              <button
+                onClick={() => setMode('annotate')}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${mode === 'annotate' ? 'bg-indigo-500 text-white' : 'text-slate-400 hover:text-white'}`}
+              >
+                ✏️ Annotate
+              </button>
+            </div>
           </div>
 
-          {/* Screenshot + overlays */}
-          <div ref={canvasWrapRef} className="relative">
-            <AnnotationCanvas
-              screenshotUrl={screenshotUrl ?? ''}
-              aiAnnotations={submission.aiAnnotations ?? []}
-              humanAnnotations={humanAnnotations}
-              activeTab={mode === 'annotate' ? 'none' : activeTab}
-            />
+          {/* Screenshot + overlays — centering container fills remaining space */}
+          <div className="flex-1 flex items-center justify-center overflow-hidden mx-6 mb-6">
+            <div ref={canvasWrapRef} className="relative">
+              <AnnotationCanvas
+                screenshotUrl={screenshotUrl ?? ''}
+                aiAnnotations={submission.aiAnnotations ?? []}
+                humanAnnotations={humanAnnotations}
+                activeTab={mode === 'annotate' ? 'none' : activeTab}
+              />
 
-            {mode === 'annotate' && !pendingBox && (
-              <DrawOverlay onDraw={handleDraw} />
-            )}
+              {mode === 'annotate' && !pendingBox && (
+                <DrawOverlay onDraw={handleDraw} />
+              )}
 
-            {mode === 'popover' && pendingBox && (
-              <>
-                {/* Show the drawn box */}
-                <div
-                  className="absolute border-2 border-dashed border-cyan-400 bg-cyan-400/10 rounded-sm pointer-events-none"
-                  style={{
-                    left: `${pendingBox.x}%`,
-                    top: `${pendingBox.y}%`,
-                    width: `${pendingBox.width}%`,
-                    height: `${pendingBox.height}%`,
-                  }}
-                />
-                {/* Popover anchored to the drawn box */}
-                <div
-                  className="absolute z-40"
-                  style={{
-                    left: `${pendingBox.x + pendingBox.width}%`,
-                    top: `${pendingBox.y}%`,
-                  }}
-                >
-                  <CommentPopover
-                    onSave={saveAnnotation}
-                    onCancel={() => { setPendingBox(null); setMode('annotate') }}
+              {mode === 'popover' && pendingBox && (
+                <>
+                  {/* Show the drawn box */}
+                  <div
+                    className="absolute border-2 border-dashed border-cyan-400 bg-cyan-400/10 rounded-sm pointer-events-none"
+                    style={{
+                      left: `${pendingBox.x}%`,
+                      top: `${pendingBox.y}%`,
+                      width: `${pendingBox.width}%`,
+                      height: `${pendingBox.height}%`,
+                    }}
                   />
-                </div>
-              </>
-            )}
+                  {/* Popover anchored to the drawn box */}
+                  <div
+                    className="absolute z-40"
+                    style={{
+                      left: `${pendingBox.x + pendingBox.width}%`,
+                      top: `${pendingBox.y}%`,
+                    }}
+                  >
+                    <CommentPopover
+                      onSave={saveAnnotation}
+                      onCancel={() => { setPendingBox(null); setMode('annotate') }}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
