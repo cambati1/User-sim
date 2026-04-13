@@ -1,0 +1,60 @@
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]: designfeedback
+  - generic [ref=e6]:
+    - heading "Get real feedback on your app's design" [level=1] [ref=e7]:
+      - text: Get
+      - emphasis [ref=e8]: real feedback
+      - text: on your app's design
+    - paragraph [ref=e9]: Upload a screenshot, get instant AI annotations, share a link for human review.
+  - generic [ref=e10]:
+    - generic [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]: "1"
+        - text: Upload
+      - generic [ref=e14]:
+        - generic [ref=e15]: "2"
+        - text: Describe
+      - generic [ref=e16]:
+        - generic [ref=e17]: "3"
+        - text: Ask
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]: Your screenshot
+        - generic [ref=e22] [cursor=pointer]:
+          - generic [ref=e23]: 🖼️
+          - paragraph [ref=e24]: Drop your screenshot here
+          - paragraph [ref=e25]: PNG, JPG or WebP · max 10 MB
+          - generic [ref=e26]: Browse files
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - text: What screen is this?
+          - generic [ref=e29]: Helps AI
+        - paragraph [ref=e30]: Give AI context so it gives relevant, not generic, feedback.
+        - textbox "e.g. Onboarding flow for a fitness app, step 2 of 4" [ref=e31]
+      - generic [ref=e32]:
+        - generic [ref=e33]: What do you want feedback on?
+        - paragraph [ref=e34]: Write your own, or tap a suggestion to add it.
+        - textbox "Is the CTA obvious enough? Does the visual hierarchy guide the eye?" [ref=e35]:
+          - /placeholder: "Is the CTA obvious enough?\nDoes the visual hierarchy guide the eye?"
+        - generic [ref=e36]:
+          - button "Is the CTA obvious?" [ref=e37]
+          - button "Is the hierarchy clear?" [ref=e38]
+          - button "Does spacing feel balanced?" [ref=e39]
+          - button "Is the color scheme accessible?" [ref=e40]
+          - button "Is there too much going on?" [ref=e41]
+          - button "Does it feel trustworthy?" [ref=e42]
+      - generic [ref=e43]:
+        - paragraph [ref=e44]: What happens next
+        - generic [ref=e45]:
+          - generic [ref=e46]: 🤖
+          - paragraph [ref=e47]:
+            - strong [ref=e48]: AI annotates your screenshot
+            - text: — region-by-region feedback in ~10 seconds
+        - generic [ref=e49]:
+          - generic [ref=e50]: 🔗
+          - paragraph [ref=e51]:
+            - strong [ref=e52]: You get a shareable link
+            - text: — send it to anyone for human annotations on top
+      - button "Analyze my design →" [ref=e53]
+      - paragraph [ref=e54]: Free · no account · your screenshot is private unless you share the link

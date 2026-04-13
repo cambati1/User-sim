@@ -3,6 +3,7 @@ import multer from 'multer'
 import path from 'node:path'
 import fs from 'node:fs'
 import { randomUUID } from 'node:crypto'
+import sharp from 'sharp'
 import { createSubmission, getSubmission } from '../db.js'
 import { analyzeScreenshot } from '../ai.js'
 
@@ -44,12 +45,24 @@ router.post('/', upload.single('screenshot'), async (req, res) => {
     ? rawQuestions.split('\n').map(q => q.trim()).filter(Boolean)
     : []
 
-  // Read file as base64 for Claude
+  // Read original file (used for display in review page)
   const fileBuffer = fs.readFileSync(req.file.path)
-  const base64Image = fileBuffer.toString('base64')
-  const mediaType = req.file.mimetype
 
-  const aiAnnotations = await analyzeScreenshot({ base64Image, mediaType, description, questions })
+  // Resize to max 1200px wide before sending to AI so coordinate space is predictable.
+  // Retina screenshots (3024px+) cause Gemini to return coordinates in a lower-res
+  // internal space, making pixel→percentage conversion inaccurate at full resolution.
+  const { data: resizedBuffer, info: resizedInfo } = await sharp(fileBuffer)
+    .resize(1200, null, { fit: 'inside', withoutEnlargement: true })
+    .png()
+    .toBuffer({ resolveWithObject: true })
+
+  const aiAnnotations = await analyzeScreenshot({
+    base64Image: resizedBuffer.toString('base64'),
+    mediaType: 'image/png',
+    description,
+    questions,
+    imageDims: { width: resizedInfo.width, height: resizedInfo.height },
+  })
 
   const screenshotPath = `uploads/${path.basename(req.file.path)}`
   const submission = createSubmission({ screenshotPath, description, questions, aiAnnotations })

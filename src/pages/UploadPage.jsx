@@ -28,26 +28,51 @@ export default function UploadPage() {
     data.append('description', description.trim())
     data.append('questions', questions)
 
-    // Animate steps during upload
+    // Coordination latches: whichever side (animation or API) finishes second triggers done
+    const apiDone = { current: false }
+    const animDone = { current: false }
+    const pendingId = { current: null }
+
+    function triggerDone() {
+      setSubmissionId(pendingId.current)
+      setStatus('done')
+    }
+
+    // Always animate through all 4 steps at 3s each, regardless of API speed
     const stepTimer = setInterval(() => {
-      setLoadingStep(prev => Math.min(prev + 1, 2))
+      setLoadingStep(prev => {
+        const next = Math.min(prev + 1, 3)
+        if (next === 3) {
+          if (apiDone.current) {
+            clearInterval(stepTimer)
+            setTimeout(triggerDone, 600)
+          } else {
+            animDone.current = true
+          }
+        }
+        return next
+      })
     }, 3000)
 
     try {
       const res = await fetch('/api/submissions', { method: 'POST', body: data })
-      clearInterval(stepTimer)
 
       if (!res.ok) {
         const { error } = await res.json()
         throw new Error(error || 'Upload failed.')
       }
 
-      setLoadingStep(3)
       const { id } = await res.json()
-      setTimeout(() => {
-        setSubmissionId(id)
-        setStatus('done')
-      }, 600)
+      pendingId.current = id
+      apiDone.current = true
+
+      if (animDone.current) {
+        // Animation already at step 3 — both sides done, fire now
+        clearInterval(stepTimer)
+        setTimeout(triggerDone, 600)
+      }
+      // else: interval will handle transition when animation reaches step 3
+
     } catch (err) {
       clearInterval(stepTimer)
       setSubmitError(err.message)
@@ -77,9 +102,11 @@ export default function UploadPage() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col items-center px-4 py-10">
-      <nav className="w-full max-w-xl flex items-center justify-between mb-10">
-        <span className="text-lg font-bold text-indigo-500">design<span className="text-slate-800">feedback</span></span>
-        <span className="text-xs text-slate-400">No account needed</span>
+      <nav className="w-full max-w-xl flex items-center justify-center mb-10">
+        <div className="bg-[#191919] rounded-full px-5 py-3 shadow-lg">
+          <span className="text-lg font-bold text-[#008cff]">design</span>
+          <span className="text-lg font-bold text-white">feedback</span>
+        </div>
       </nav>
 
       <div className="text-center mb-8">
