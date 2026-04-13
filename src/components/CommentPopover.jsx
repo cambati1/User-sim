@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 
 /**
  * Props:
@@ -15,31 +17,34 @@ export default function CommentPopover({ onSave, onCancel }) {
   }
 
   return (
-    <div className="absolute z-40 top-0 left-full ml-3 w-64 bg-slate-800 border border-slate-600 rounded-2xl p-4 shadow-2xl">
-      <p className="text-sm font-bold text-white mb-0.5">Add your annotation</p>
-      <p className="text-xs text-slate-500 mb-3">What's your feedback on this region?</p>
-      <textarea
+    <div className="absolute z-40 top-0 left-full ml-3 w-64 bg-card border border-border rounded-2xl p-4 shadow-2xl">
+      <p className="text-sm font-bold text-card-foreground mb-0.5">Add your annotation</p>
+      <p className="text-xs text-muted-foreground mb-3">What's your feedback on this region?</p>
+      <Textarea
         autoFocus
         value={comment}
         onChange={e => setComment(e.target.value)}
         onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSave() }}
         rows={4}
         placeholder="Your comment…"
-        className="w-full px-3 py-2.5 bg-slate-900 border border-indigo-500 ring-2 ring-indigo-500/20 rounded-xl text-xs text-white placeholder-slate-600 focus:outline-none resize-none"
+        className="text-xs resize-none"
       />
       <div className="flex gap-2 mt-3">
-        <button
+        <Button
           onClick={handleSave}
-          className="flex-1 py-2 bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-bold rounded-xl transition-colors"
+          size="sm"
+          className="flex-1 text-xs"
         >
           Save annotation
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={onCancel}
-          className="px-3 py-2 border border-slate-600 text-slate-400 text-xs rounded-xl hover:bg-slate-700 transition-colors"
+          variant="outline"
+          size="sm"
+          className="text-xs"
         >
           Cancel
-        </button>
+        </Button>
       </div>
     </div>
   )

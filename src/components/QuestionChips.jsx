@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils'
+
 const SUGGESTIONS = [
   'Is the CTA obvious?',
   'Is the hierarchy clear?',
@@ -31,12 +33,12 @@ export default function QuestionChips({ value, onChange }) {
           key={s}
           type="button"
           onClick={() => toggle(s)}
-          className={[
+          className={cn(
             'px-3 py-1 rounded-full text-xs font-medium border transition-colors',
             active.has(s)
-              ? 'border-indigo-500 bg-indigo-50 text-indigo-600'
-              : 'border-slate-200 text-slate-500 hover:border-indigo-300 hover:text-indigo-500',
-          ].join(' ')}
+              ? 'border-primary bg-primary/10 text-primary'
+              : 'border-border text-muted-foreground hover:border-primary/50 hover:text-primary',
+          )}
         >
           {s}
         </button>

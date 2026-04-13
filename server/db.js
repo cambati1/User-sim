@@ -6,12 +6,13 @@ const db = new Database(DB_PATH)
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS submissions (
-    id             TEXT PRIMARY KEY,
+    id              TEXT PRIMARY KEY,
     screenshot_path TEXT NOT NULL,
-    description    TEXT NOT NULL,
-    questions      TEXT NOT NULL,
-    ai_annotations TEXT NOT NULL,
-    created_at     INTEGER NOT NULL
+    description     TEXT NOT NULL,
+    questions       TEXT NOT NULL,
+    ai_annotations  TEXT NOT NULL,
+    ai_error        TEXT,
+    created_at      INTEGER NOT NULL
   );
   CREATE TABLE IF NOT EXISTS annotations (
     id            TEXT PRIMARY KEY,
@@ -25,13 +26,16 @@ db.exec(`
   );
 `)
 
-export function createSubmission({ screenshotPath, description, questions, aiAnnotations }) {
+// Migrate existing DBs that predate the ai_error column
+try { db.exec(`ALTER TABLE submissions ADD COLUMN ai_error TEXT`) } catch { /* already exists */ }
+
+export function createSubmission({ screenshotPath, description, questions, aiAnnotations, aiError = null }) {
   const id = randomUUID()
   const now = Date.now()
   db.prepare(`
-    INSERT INTO submissions (id, screenshot_path, description, questions, ai_annotations, created_at)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(id, screenshotPath, description, JSON.stringify(questions), JSON.stringify(aiAnnotations), now)
+    INSERT INTO submissions (id, screenshot_path, description, questions, ai_annotations, ai_error, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(id, screenshotPath, description, JSON.stringify(questions), JSON.stringify(aiAnnotations), aiError, now)
   return getSubmission(id)
 }
 
@@ -44,9 +48,15 @@ export function getSubmission(id) {
     description: row.description,
     questions: JSON.parse(row.questions),
     aiAnnotations: JSON.parse(row.ai_annotations),
+    aiError: row.ai_error ?? null,
     createdAt: row.created_at,
     annotations: getAnnotations(id),
   }
+}
+
+export function updateSubmissionAI(id, { aiAnnotations, aiError }) {
+  db.prepare(`UPDATE submissions SET ai_annotations = ?, ai_error = ? WHERE id = ?`)
+    .run(JSON.stringify(aiAnnotations), aiError, id)
 }
 
 export function createAnnotation({ submissionId, x, y, width, height, comment }) {
